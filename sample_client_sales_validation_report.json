@@ -1,0 +1,21 @@
+{
+  "file_name": "sample_client_sales.csv",
+  "total_rows": 8,
+  "validation_passed": false,
+  "missing_columns": [],
+  "invalid_row_count": 1,
+  "row_issues": [
+    {
+      "row_number": 6,
+      "transaction_id": "T105",
+      "issues": [
+        "Missing or invalid amount"
+      ]
+    }
+  ],
+  "duplicate_transaction_ids": [
+    "T101"
+  ],
+  "duplicate_transaction_id_count": 1,
+  "review_required": true
+}

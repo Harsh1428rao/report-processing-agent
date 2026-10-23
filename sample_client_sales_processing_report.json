@@ -1,0 +1,66 @@
+{
+  "input_file": "sample_client_sales.csv",
+  "processing_status": "NeedsReview",
+  "review_required": true,
+  "profile": {
+    "file_name": "sample_client_sales.csv",
+    "row_count": 8,
+    "column_count": 5,
+    "columns": [
+      "transaction_id",
+      "region",
+      "amount",
+      "status",
+      "transaction_date"
+    ],
+    "data_types": {
+      "transaction_id": "object",
+      "region": "object",
+      "amount": "float64",
+      "status": "object",
+      "transaction_date": "object"
+    },
+    "missing_values": {
+      "transaction_id": 0,
+      "region": 0,
+      "amount": 1,
+      "status": 0,
+      "transaction_date": 0
+    },
+    "exact_duplicate_rows": 1,
+    "amount_statistics": {
+      "valid_amount_count": 7,
+      "missing_or_invalid_amount_count": 1,
+      "total_amount": 113500.0,
+      "average_amount": 16214.29
+    }
+  },
+  "validation": {
+    "missing_columns": [],
+    "invalid_row_count": 1,
+    "row_issues": [
+      {
+        "row_number": 6,
+        "transaction_id": "T105",
+        "issues": [
+          "Missing or invalid amount"
+        ]
+      }
+    ],
+    "duplicate_transaction_ids": [
+      "T101"
+    ],
+    "duplicate_transaction_id_count": 1,
+    "validation_passed": false
+  },
+  "cleaning": {
+    "output_file": "sample_client_sales_cleaned.csv",
+    "original_rows": 8,
+    "cleaned_rows": 7,
+    "exact_duplicate_rows_removed": 1,
+    "missing_values_after_cleaning": {
+      "amount": 1
+    }
+  },
+  "report_file": "sample_client_sales_processing_report.json"
+}

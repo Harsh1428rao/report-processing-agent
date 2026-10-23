@@ -1,0 +1,13 @@
+{
+  "input_file": "sample_client_sales.csv",
+  "output_file": "sample_client_sales_cleaned.csv",
+  "original_rows": 8,
+  "cleaned_rows": 7,
+  "exact_duplicate_rows_removed": 1,
+  "rows_with_repeated_transaction_ids_before_cleaning": 2,
+  "rows_with_repeated_transaction_ids_after_cleaning": 0,
+  "missing_values_after_cleaning": {
+    "amount": 1
+  },
+  "review_required": true
+}
