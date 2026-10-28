@@ -19,9 +19,42 @@ OUTPUT_DIR = BASE_DIR / "output"
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 
+# def process_saved_csv(input_path: Path, original_name: str):
+#     try:
+#         report = process_report(str(input_path))
+
+#         return {
+#             "original_filename": original_name,
+#             "processing_status": report["processing_status"],
+#             "review_required": report["review_required"],
+#             "profile": report["profile"],
+#             "validation": report["validation"],
+#             "cleaning": report["cleaning"],
+#             "report_file": report["report_file"],
+#         }
+
+#     except (ValueError, OSError) as error:
+#         raise HTTPException(
+#             status_code=400,
+#             detail=f"Could not process the CSV: {error}",
+#         ) from error
+
 def process_saved_csv(input_path: Path, original_name: str):
     try:
         report = process_report(str(input_path))
+
+        cleaned_filename = report["cleaning"]["output_file"]
+        cleaned_path = input_path.parent / cleaned_filename
+
+        if not cleaned_path.exists():
+            raise HTTPException(
+                status_code=500,
+                detail="The cleaned CSV file was not created.",
+            )
+
+        cleaned_csv_base64 = base64.b64encode(
+            cleaned_path.read_bytes()
+        ).decode("ascii")
 
         return {
             "original_filename": original_name,
@@ -31,7 +64,12 @@ def process_saved_csv(input_path: Path, original_name: str):
             "validation": report["validation"],
             "cleaning": report["cleaning"],
             "report_file": report["report_file"],
+            "cleaned_filename": cleaned_filename,
+            "cleaned_csv_base64": cleaned_csv_base64,
         }
+
+    except HTTPException:
+        raise
 
     except (ValueError, OSError) as error:
         raise HTTPException(
