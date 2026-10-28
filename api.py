@@ -1,17 +1,17 @@
 
+import base64
 import shutil
-import os
-import secrets
 from pathlib import Path
 
-from fastapi import FastAPI, File, HTTPException, UploadFile, Request, Header
+from fastapi import FastAPI, File, HTTPException, UploadFile, Body
 
 from process_report import process_report
+
 
 app = FastAPI(
     title="Report Processing Agent",
     description="Upload a CSV to profile, validate, and clean it.",
-    version="1.1.0",
+    version="1.2.0",
 )
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -76,8 +76,8 @@ def process_csv(file: UploadFile = File(...)):
 
 
 @app.post("/process-raw")
-async def process_raw_csv(
-    request: Request,
+def process_raw_csv(
+    payload: dict = Body(...),
     filename: str = "upload.csv",
 ):
     if not filename.lower().endswith(".csv"):
@@ -86,11 +86,19 @@ async def process_raw_csv(
             detail="The filename must end in .csv.",
         )
 
-    original_name = Path(filename).name
-    input_path = OUTPUT_DIR / original_name
+    encoded_content = payload.get("content_base64")
+
+    if not isinstance(encoded_content, str) or not encoded_content:
+        raise HTTPException(
+            status_code=400,
+            detail="Missing Base64 CSV content.",
+        )
 
     try:
-        content = await request.body()
+        content = base64.b64decode(
+            encoded_content,
+            validate=True,
+        )
 
         if not content:
             raise HTTPException(
@@ -98,13 +106,14 @@ async def process_raw_csv(
                 detail="The uploaded CSV content is empty.",
             )
 
-        with input_path.open("wb") as destination:
-            destination.write(content)
+        original_name = Path(filename).name
+        input_path = OUTPUT_DIR / original_name
+        input_path.write_bytes(content)
 
         return process_saved_csv(input_path, original_name)
 
-    except OSError as error:
+    except (ValueError, OSError) as error:
         raise HTTPException(
             status_code=400,
-            detail=f"Could not save the CSV: {error}",
+            detail=f"Could not process the CSV: {error}",
         ) from error
